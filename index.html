@@ -18,8 +18,98 @@
       href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap"
       rel="stylesheet"
     />
-    />
+
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        perspective: 500px;
+        transform-style: preserve-3d;
+        position: relative;
+      }
+
+      .slide {
+        transition: 1s;
+        width: 200px;
+        height: 300px;
+        box-shadow: 0 10px 50px gray;
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 1);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .slide img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+      }
+
+      .slide:nth-of-type(1),
+      .slide:nth-of-type(2) {
+        transform: translate(calc(-50% * 5.1), -50%) translateZ(-100px);
+      }
+
+      .slide:nth-of-type(3) {
+        transform: translate(calc(-50% * 1.1), -50%) translateZ(50px);
+      }
+
+      .slide:nth-of-type(4),
+      .slide:nth-of-type(5) {
+        transform: translate(calc(-50% * -2.9), -50%) translateZ(-100px);
+      }
+
+      .buttons {
+        position: absolute;
+        z-index: 10;
+        bottom: 1em;
+        left: 50%;
+        transform: translate(-50%);
+      }
+
+      .buttons button {
+        font-size: 1.5rem;
+        padding: 1em 1.5em;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+
+      .buttons button:active {
+        transform: scale(0.95);
+      }
+      .card-title {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
       .main-container {
         display: flex;
         gap: 20px;
@@ -58,27 +148,110 @@
       <h1><a href="#" class="nav-link px-2 text-danger">불타오르조🐦‍🔥</a></h1>
     </div>
 
-    <div class="main-container">
-      <!-- 배경을 변경할 카드들 -->
+    <div class="container">
       <div
-        class="card"
+        class="slide"
         data-background="https://helpx.adobe.com/content/dam/help/en/photoshop/using/quick-actions/remove-background-before-qa1.png"
       >
-        <h3>Card 1</h3>
+        <h5 class="card-title">이동건</h5>
       </div>
       <div
-        class="card"
+        class="slide"
         data-background="https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=13262118&filePath=L2Rpc2sxL25ld2RhdGEvMjAyMC8yMS9DTFMxMDAwNi82MmZhMWExMy03ZjRmLTQ1NWMtYTZlNy02ZTk2YjhjMjBkYTk=&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10006"
       >
-        <h3>Card 2</h3>
+        <h5 class="card-title">이용우</h5>
       </div>
       <div
-        class="card"
+        class="slide"
         data-background="https://helpx.adobe.com/content/dam/help/en/photoshop/using/quick-actions/remove-background-before-qa1.png"
       >
-        <h3>Card 3</h3>
+        <h5 class="card-title">김신우</h5>
+      </div>
+      <div
+        class="slide"
+        data-background="https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=13262118&filePath=L2Rpc2sxL25ld2RhdGEvMjAyMC8yMS9DTFMxMDAwNi82MmZhMWExMy03ZjRmLTQ1NWMtYTZlNy02ZTk2YjhjMjBkYTk=&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10006"
+      >
+        <h5 class="card-title">문규민</h5>
+      </div>
+      <div
+        class="slide"
+        data-background="https://helpx.adobe.com/content/dam/help/en/photoshop/using/quick-actions/remove-background-before-qa1.png"
+      >
+        <h5 class="card-title">임수민</h5>
       </div>
     </div>
+
+    <div class="buttons">
+      <button class="prev">👈</button>
+      <button class="next">👉</button>
+    </div>
+    <script>
+      const container = document.querySelector(".container");
+      const prev = document.querySelector(".prev");
+      const next = document.querySelector(".next");
+
+      prev.addEventListener("click", () => {
+        const slides = document.querySelectorAll(".slide");
+        container.append(slides[0]);
+      });
+
+      next.addEventListener("click", () => {
+        const slides = document.querySelectorAll(".slide");
+        container.prepend(slides[slides.length - 1]);
+      });
+
+      const cards = document.querySelectorAll(".slide");
+
+      // 배경을 변경할 함수
+      function changeBackground(event) {
+        const card = event.currentTarget;
+        const backgroundImage = card.getAttribute("data-background"); // 카드에 설정된 배경 이미지 URL 가져오기
+
+        // 기존에 추가된 배경 요소가 있으면 제거
+        const existingBackground = document.querySelector(".background-blur");
+        if (existingBackground) {
+          existingBackground.remove();
+        }
+
+        // 새로운 배경 요소를 동적으로 생성
+        const backgroundElement = document.createElement("div");
+        backgroundElement.classList.add("background-blur"); // class 추가하여 스타일을 설정
+        backgroundElement.style.position = "absolute";
+        backgroundElement.style.top = "0";
+        backgroundElement.style.left = "0";
+        backgroundElement.style.width = "100vw";
+        backgroundElement.style.height = "100vh";
+        backgroundElement.style.backgroundImage = `url(${backgroundImage})`; // 배경 이미지 설정
+        backgroundElement.style.backgroundSize = "cover";
+        backgroundElement.style.backgroundPosition = "center";
+        backgroundElement.style.filter = "blur(8px)"; // 배경 이미지에 블러 효과 적용
+        backgroundElement.style.zIndex = "-1"; // 콘텐츠 위에 배경이 표시되지 않도록 설정
+
+        // 배경 이미지 위에 투명도 있는 오버레이 추가
+        const overlay = document.createElement("div");
+        overlay.style.position = "absolute";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.backgroundColor = "rgba(0, 0, 0, 0.1)"; // 검정색에 반투명도 적용
+        overlay.style.zIndex = "1"; // 배경 이미지 위로 오버레이가 표시되도록 설정
+        // body의 배경을 교체
+        // 배경 이미지와 오버레이를 함께 추가
+        backgroundElement.appendChild(overlay);
+        document.body.appendChild(backgroundElement);
+      }
+
+      // 각 카드에 hover 이벤트 리스너 추가
+      cards.forEach((card) => {
+        card.addEventListener("mouseenter", changeBackground); // 카드에 hover되었을 때 배경 변경
+        card.addEventListener("mouseleave", () => {
+          const backgroundElement = document.querySelector(".background-blur");
+          if (backgroundElement) {
+            document.body.removeChild(backgroundElement); // hover를 벗어났을 때 배경 원래대로 복구
+          }
+        });
+      });
+    </script>
   </body>
-  <script src="app.js"></script>
 </html>
