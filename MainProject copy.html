@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 섹션</title>
+    <style>
+        /* 큰 블록 스타일 */
+        .profile-container {
+            width: 80%;
+            max-width: 600px;
+            height: 800px;
+            margin: 100px auto 20px;
+            background-color: #f3f3f3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 상단 섹션 스타일 */
+        .top-section {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 프로필 사진 원형 도형 */
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 이름 및 개인정보 섹션 */
+        .personal-info {
+            margin-left: 20px;
+            padding: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            flex: 1;
+        }
+
+        .personal-info h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .personal-info p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* 소개란 큰 직사각형 */
+        .introduction {
+            padding: 20px;
+            background-color: #dcdcdc;
+            border-radius: 0 0 10px 10px;
+            font-size: 16px;
+            color: #333;
+            height: 430px;
+            margin: 20px 20px 20px 20px;
+        }
+
+        /* 내부 오른쪽 하단 버튼 스타일 */
+        .inside-button {
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* 외부 오른쪽 하단 블록 스타일 */
+        .outside-block {
+            width: 50px;
+            height: 50px;
+            background-color: #28a745;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="profile-container">
+        <!-- 상단 섹션: 프로필 사진과 개인정보 -->
+        <div class="top-section">
+            <div class="profile-picture">
+                <img src="your-photo.jpg" alt="프로필 사진">
+            </div>
+            <div class="personal-info">
+                <h2 id="profile-name">홍길동</h2> <!-- ID added here for JavaScript reference -->
+                <p>나이: XX</p>
+                <p>직업: 직업명</p>
+                <p>기타 개인정보...</p>
+            </div>
+        </div>
+
+        <!-- 소개란 큰 직사각형 -->
+        <div class="introduction">
+            <h3>소개</h3>
+            <p>이곳에 개인 소개를 입력하세요. 예: 저는 웹 개발자로서 창의적인 프로젝트에 열정을 가지고 있습니다...</p>
+        </div>
+
+        <!-- 내부 오른쪽 하단 버튼 -->
+        <div class="inside-button">
+            정보
+        </div>
+    </div>
+
+    <!-- 외부 오른쪽 하단 블록 -->
+    <div class="outside-block">
+        홈
+    </div>
+
+    <script>
+        // JavaScript to set the title based on the profile name
+        document.addEventListener("DOMContentLoaded", function () {
+            const nameElement = document.getElementById("profile-name");
+            const profileName = nameElement.textContent.trim();
+            document.title = `${profileName} 프로필`; // Sets the title to "[Name] 프로필"
+        });
+    </script>
+
+</body>
+
+</html>
