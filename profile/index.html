@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 섹션</title>
+    <style>
+        /** 기존 스타일 유지 */
+        .profile-container {
+            width: 80%;
+            max-width: 600px;
+            height: 800px;
+            margin: 100px auto 20px;
+            background-color: #f3f3f3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /** 상단 섹션 스타일 */
+        .top-section {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /** 프로필 사진 원형 도형 */
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+        }
+
+        /** 이름 및 개인정보 섹션 */
+        .personal-info {
+            margin-left: 20px;
+            padding: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            flex: 1;
+            width: calc(100% - 170px);
+            max-width: calc(100% - 170px);
+            box-sizing: border-box;
+        }
+
+        .personal-info h2 {
+            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .personal-info p {
+            font-size: 16px;
+            color: #555;
+            margin: 8px 0;
+        }
+
+        /* 개인 링크 컨테이너와 내용 스타일 수정 */
+        .personal-link-container {
+            display: flex;
+            align-items: center;
+            max-width: 100%;
+        }
+
+        .personal-link-label {
+            flex-shrink: 0;
+            margin-right: 4px;
+        }
+
+        .personal-link-content {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        /* 링크 스타일 추가 */
+        .personal-link-content a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .personal-link-content a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /** 나머지 스타일 유지 */
+        .introduction {
+            padding: 20px;
+            background-color: #dcdcdc;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #333;
+            height: 430px;
+            margin: 20px;
+        }
+
+        .inside-button {
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .outside-block {
+            width: 50px;
+            height: 50px;
+            background-color: #28a745;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .top-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .personal-info {
+                margin-left: 0;
+                margin-top: 20px;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .profile-picture {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        Loading...
+    </div>
+
+    <div id="profile-container" class="profile-container" style="display: none;">
+        <div class="top-section">
+            <div class="profile-picture">
+                <img id="profile-img" src="" alt="프로필 사진">
+            </div>
+            <div class="personal-info">
+                <h2 id="profile-name"></h2>
+                <p id="profile-role"></p>
+                <div class="personal-link-container">
+                    <span class="personal-link-label">개인 링크: </span>
+                    <span class="personal-link-content" id="profile-link"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="introduction">
+            <h3>소개</h3>
+            <p id="profile-introduction"></p>
+        </div>
+
+        <div class="inside-button" onclick="handleInfoClick()">
+            정보
+        </div>
+    </div>
+
+    <div class="outside-block" onclick="handleHomeClick()">
+        홈
+    </div>
+
+    <script type="module">
+        import { getProfileById } from '/api/firebaseProfileAPI.js';
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function displayProfileData(data) {
+            if (!data) {
+                alert('프로필을 찾을 수 없습니다.');
+                return;
+            }
+
+            document.getElementById('profile-img').src = data.image || 'default-profile.jpg';
+            document.getElementById('profile-name').textContent = data.name || '이름 없음';
+            document.getElementById('profile-role').textContent = `역할: ${data.role || '미지정'}`;
+            
+            // 링크를 a 태그로 변경
+            const linkElement = document.getElementById('profile-link');
+            if (data.blogAddress) {
+                linkElement.innerHTML = `<a href="${data.blogAddress}" target="_blank">${data.blogAddress}</a>`;
+            } else {
+                linkElement.textContent = '없음';
+            }
+            
+            document.getElementById('profile-introduction').textContent = data.introduction || '소개가 없습니다.';
+            document.title = `${data.name || '프로필'} 프로필`;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('profile-container').style.display = 'block';
+        }
+
+        window.handleInfoClick = function() {
+            const id = getQueryParam('id');
+            if (id) {
+                window.location.href = `/profile/edit?id=${id}`;
+            }
+        };
+
+        window.handleHomeClick = function() {
+            window.location.href = '/';
+        };
+
+        async function initProfile() {
+            const id = getQueryParam('id');
+            if (!id) {
+                alert('프로필 ID가 필요합니다.');
+                return;
+            }
+
+            try {
+                document.getElementById('loading').style.display = 'flex';
+                const profileData = await getProfileById(id);
+                displayProfileData(profileData);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                alert('프로필을 불러오는 중 오류가 발생했습니다.');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initProfile);
+    </script>
+</body>
+</html>
