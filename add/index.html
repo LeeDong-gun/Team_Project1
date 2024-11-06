@@ -202,7 +202,10 @@
         </form>
     </div>
 
-    <script>
+    <script type="module">
+        // firebaseProfileAPI.js 파일에서 saveProfileInfo 함수를 import합니다.
+        import { saveProfileInfo } from '../api/firebaseProfileAPI.js';
+
         // IP 주소 자동 가져오기
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
@@ -214,7 +217,7 @@
                 document.getElementById('ip-address').value = 'IP 주소를 가져올 수 없습니다.';
             });
 
-        // 이미지 URL 입력시 미리보기
+        // 이미지 URL 입력 시 미리보기
         document.getElementById('profile-image').addEventListener('input', function(e) {
             const previewImg = document.getElementById('image-preview');
             const imageUrl = e.target.value;
@@ -238,39 +241,30 @@
         }
 
         // 폼 제출 처리
-        document.getElementById('profile-form').addEventListener('submit', function(e) {
+        document.getElementById('profile-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            // 폼 데이터를 객체로 저장
             const formData = {
                 name: document.getElementById('name').value,
-                profileImage: document.getElementById('profile-image').value,
+                image: document.getElementById('profile-image').value,
                 role: document.getElementById('role').value,
-                personalLink: document.getElementById('personal-link').value,
-                details: document.getElementById('details').value,
-                ip: document.getElementById('ip-address').value
+                blogAddress: document.getElementById('personal-link').value,
+                introduction: document.getElementById('details').value,
+                ipAddress: document.getElementById('ip-address').value
             };
 
-            // 여기에 서버로 데이터를 전송하는 코드를 추가하세요
-            console.log('제출된 데이터:', formData);
-            
-            // 예시: fetch를 사용한 서버 전송
-            /*
-            fetch('/api/profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('프로필이 성공적으로 저장되었습니다!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('저장 중 오류가 발생했습니다.');
-            });
-            */
+            // saveProfileInfo 함수를 호출하여 데이터를 Firestore에 저장
+            try {
+                const docId = await saveProfileInfo(formData);
+                if (docId) {
+                    alert('Profile saved successfully');
+                    window.location.href = '/index1.html';
+                }
+            } catch (error) {
+                console.error('Error saving profile:', error);
+                alert('An error occurred while saving the profile.');
+            }
         });
     </script>
 </body>
