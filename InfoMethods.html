@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBZp_G-cFEfe2B_XErz8ia5lsrdcem7EtU",
+        authDomain: "teamprofile-d0f82.firebaseapp.com",
+        projectId: "teamprofile-d0f82",
+        storageBucket: "teamprofile-d0f82.appspot.com",
+        messagingSenderId: "112520574366",
+        appId: "1:112520574366:web:6b265d5d3d07c49b9d928f",
+        measurementId: "G-0XFM7RGBKG",
+      };
+
+      // Firebase 인스턴스 초기화
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+
+      //데이터를 서버에 저장하는 함수(id 수정 시 $('#id')의 id도 변경 필수) //id='savebtn'인 버튼 클릭 시 동작
+      $("#savebtn").click(async function postInfo() {
+        let name = $("#name").val(); //이름
+        let image = $("#image").val(); //프로필 사진 url
+        let role = $("#role").val(); //맡은 역할
+        let blogAddress = $("blogAddress").val(); //블로그or깃헙 url (택 1)
+        let introduction = $("introduction").val(); //자기 소개
+        let ipAddress = $("#ipAddress").val(); //IP 주소
+
+        let doc = {
+          name: name,
+          image: image,
+          role: role,
+          address: address,
+          introduction: introduction,
+          area: area,
+        };
+        await addDoc(collection(db, "profileInfo"), doc);
+        alert("저장완료!");
+        window.location.reload();
+      });
+
+      //데이터를 서버로부터 불러오는 함수
+      let docs = await getDocs(collection(db, "profileInfo"));
+      docs.forEach((doc) => {
+        let row = doc.data();
+
+        let name = row["name"];
+        let image = row["image"];
+        let role = row["role"];
+        let blogAddress = row["blogAddress"];
+        let ipAddress = row["ipAddress"];
+      });
+    </script>
+  </head>
+  <body></body>
+</html>
