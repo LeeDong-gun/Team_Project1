@@ -2,15 +2,20 @@
 <html>
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--scrip의 type은 module로 설정!!!!!-->
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+      //<!-------------여기서부터 복사---------------->
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+      import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
       import {
-        getFirestore,
         collection,
         addDoc,
-        getDocs,
-      } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        setDoc,
+        query,
+        where,
+      } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+      import { getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyBZp_G-cFEfe2B_XErz8ia5lsrdcem7EtU",
@@ -25,40 +30,87 @@
       // Firebase 인스턴스 초기화
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
+      const db = getFirestore(app);
+      //<!-------------여기까지 <script> tag 안에 붙여넣기 해서 사용해주세요.--------------->
 
-      //데이터를 서버에 저장하는 함수(id 수정 시 $('#id')의 id도 변경 필수) //id='savebtn'인 버튼 클릭 시 동작
+      //데이터를 서버에 저장하는 함수 //html tag 중 id='savebtn'인 버튼 클릭 시 동작(id 값 변경 가능)
       $("#savebtn").click(async function postInfo() {
-        let name = $("#name").val(); //이름
+        let name = $("#name").val(); //이름(데이터를 구분하는 고유id로 사용)!!!!!
         let image = $("#image").val(); //프로필 사진 url
         let role = $("#role").val(); //맡은 역할
-        let blogAddress = $("blogAddress").val(); //블로그or깃헙 url (택 1)
-        let introduction = $("introduction").val(); //자기 소개
+        let blogAddress = $("#blogAddress").val(); //블로그or깃헙 url (택 1)
+        let introduction = $("#introduction").val(); //자기 소개
         let ipAddress = $("#ipAddress").val(); //IP 주소
 
         let doc = {
           name: name,
           image: image,
           role: role,
-          address: address,
+          blogAddress: blogAddress,
           introduction: introduction,
-          area: area,
+          ipAddress: ipAddress,
         };
-        await addDoc(collection(db, "profileInfo"), doc);
+        await setDoc(collection(db, "profileInfo", "id 지정"), doc); //데이터 id 지정 해주세요. 세팅된 id 이름으로 데이터베이스에 저장됩니다.
         alert("저장완료!");
         window.location.reload();
       });
 
-      //데이터를 서버로부터 불러오는 함수
-      let docs = await getDocs(collection(db, "profileInfo"));
-      docs.forEach((doc) => {
-        let row = doc.data();
+      //전체 데이터를 서버로부터 불러오는 함수
+      async function getAllInfo() {
+        let profiles = []; //불러온 개인 정보를 저장할 list
+        let docs = await getDocs(collection(db, "profileInfo")); //데이터 스냅 받아오기
+        docs.forEach((doc) => {
+          let row = doc.data();
 
-        let name = row["name"];
-        let image = row["image"];
-        let role = row["role"];
-        let blogAddress = row["blogAddress"];
-        let ipAddress = row["ipAddress"];
-      });
+          let name = row["name"];
+          let image = row["image"];
+          let role = row["role"];
+          let blogAddress = row["blogAddress"];
+          let introduction = row["introduction"];
+          let ipAddress = row["ipAddress"];
+
+          profiles.push({
+            name: name,
+            image: image,
+            role: role,
+            blogAddress: blogAddress,
+            ipAddress: ipAddress,
+          });
+        });
+        return profiles; //전체 데이터를 list 형태로 반환
+      }
+
+      //특정 데이터만 출력하는 함수 //username과 동일한 값을 가진 데이터만 호출
+      async function getInfoByName(username) {
+        let oneProfile = []; //불러온 개인 정보를 저장할 list
+
+        let oneInfo = query(
+          collection(db, "profileInfo"),
+          where("name", "==", username)
+        ); //데이터베이스에서 name==username인 데이터를 필터링
+        let querySnapshot = await getDocs(oneInfo); //필터링 된 데이터를 스냅샷
+
+        querySnapshot.forEach((doc) => {
+          let row = doc.data();
+
+          let name = row["name"];
+          let image = row["image"];
+          let role = row["role"];
+          let blogAddress = row["blogAddress"];
+          let introduction = row["introduction"];
+          let ipAddress = row["ipAddress"];
+
+          oneProfile.push({
+            name: name,
+            image: image,
+            role: role,
+            blogAddress: blogAddress,
+            introduction: introduction,
+            ipAddress: ipAddress,
+          });
+        });
+        return oneProfile; //개인 데이터를 list 형태로 반환
+      }
     </script>
   </head>
   <body></body>
