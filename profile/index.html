@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>프로필 섹션</title>
     <style>
-        /** 큰 블록 스타일 */
+        /** 기존 스타일 유지 */
         .profile-container {
             width: 80%;
             max-width: 600px;
@@ -69,7 +68,7 @@
             margin: 8px 0;
         }
 
-        /* 개인 링크 컨테이너와 내용 스타일 */
+        /* 개인 링크 컨테이너와 내용 스타일 수정 */
         .personal-link-container {
             display: flex;
             align-items: center;
@@ -88,7 +87,19 @@
             min-width: 0;
         }
 
-        /** 소개란 큰 직사각형 */
+        /* 링크 스타일 추가 */
+        .personal-link-content a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .personal-link-content a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /** 나머지 스타일 유지 */
         .introduction {
             padding: 20px;
             background-color: #dcdcdc;
@@ -99,7 +110,6 @@
             margin: 20px;
         }
 
-        /** 내부 오른쪽 하단 버튼 스타일 */
         .inside-button {
             width: 50px;
             height: 50px;
@@ -116,7 +126,6 @@
             cursor: pointer;
         }
 
-        /** 외부 오른쪽 하단 블록 스타일 */
         .outside-block {
             width: 50px;
             height: 50px;
@@ -134,7 +143,6 @@
             cursor: pointer;
         }
 
-        /* 로딩 스피너 스타일 */
         .loading {
             display: none;
             justify-content: center;
@@ -143,7 +151,6 @@
             font-size: 1.5rem;
         }
 
-        /* 반응형 스타일 */
         @media (max-width: 480px) {
             .profile-container {
                 width: 95%;
@@ -168,15 +175,12 @@
         }
     </style>
 </head>
-
 <body>
-    <!-- 로딩 표시 -->
     <div id="loading" class="loading">
         Loading...
     </div>
 
     <div id="profile-container" class="profile-container" style="display: none;">
-        <!-- 상단 섹션: 프로필 사진과 개인정보 -->
         <div class="top-section">
             <div class="profile-picture">
                 <img id="profile-img" src="" alt="프로필 사진">
@@ -191,56 +195,53 @@
             </div>
         </div>
 
-        <!-- 소개란 큰 직사각형 -->
         <div class="introduction">
             <h3>소개</h3>
             <p id="profile-introduction"></p>
         </div>
 
-        <!-- 내부 오른쪽 하단 버튼 -->
         <div class="inside-button" onclick="handleInfoClick()">
             정보
         </div>
     </div>
 
-    <!-- 외부 오른쪽 하단 블록 -->
     <div class="outside-block" onclick="handleHomeClick()">
         홈
     </div>
 
     <script type="module">
-        // Firebase API 함수 임포트
         import { getProfileById } from '/api/firebaseProfileAPI.js';
 
-        // URL에서 id 파라미터 가져오기
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(param);
         }
 
-        // 프로필 데이터 표시 함수
         function displayProfileData(data) {
             if (!data) {
                 alert('프로필을 찾을 수 없습니다.');
                 return;
             }
 
-            // 각 요소에 데이터 설정
             document.getElementById('profile-img').src = data.image || 'default-profile.jpg';
             document.getElementById('profile-name').textContent = data.name || '이름 없음';
             document.getElementById('profile-role').textContent = `역할: ${data.role || '미지정'}`;
-            document.getElementById('profile-link').textContent = data.blogAddress || '없음';
-            document.getElementById('profile-introduction').textContent = data.introduction || '소개가 없습니다.';
             
-            // 제목 업데이트
+            // 링크를 a 태그로 변경
+            const linkElement = document.getElementById('profile-link');
+            if (data.blogAddress) {
+                linkElement.innerHTML = `<a href="${data.blogAddress}" target="_blank">${data.blogAddress}</a>`;
+            } else {
+                linkElement.textContent = '없음';
+            }
+            
+            document.getElementById('profile-introduction').textContent = data.introduction || '소개가 없습니다.';
             document.title = `${data.name || '프로필'} 프로필`;
 
-            // 로딩 숨기고 프로필 표시
             document.getElementById('loading').style.display = 'none';
             document.getElementById('profile-container').style.display = 'block';
         }
 
-        // 버튼 클릭 핸들러
         window.handleInfoClick = function() {
             const id = getQueryParam('id');
             if (id) {
@@ -252,7 +253,6 @@
             window.location.href = '/';
         };
 
-        // 페이지 로드 시 프로필 데이터 가져오기
         async function initProfile() {
             const id = getQueryParam('id');
             if (!id) {
@@ -271,10 +271,7 @@
             }
         }
 
-        // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', initProfile);
     </script>
-
 </body>
-
 </html>
