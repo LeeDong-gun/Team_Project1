@@ -210,7 +210,7 @@
     </div>
 
     <script type="module">
-        import { getProfileById } from '/api/firebaseProfileAPI.js';
+        import { getProfileById } from '../api/firebaseProfileAPI.js';
 
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -250,7 +250,7 @@
         };
 
         window.handleHomeClick = function() {
-            window.location.href = '/';
+            window.location.href = '/Team_Project1';
         };
 
         async function initProfile() {
